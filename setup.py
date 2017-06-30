@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name='cern_webinfra_service_engine',
     packages=['cern_webinfra_service_engine'],
-    version='0.1',
+    version='0.1.0',
     description='Library for connecting the microservices with CERN web infrastructure manager',
     author='CERN / Wojciech Kulma',
     author_email='wojciech.kulma@cern.ch',
