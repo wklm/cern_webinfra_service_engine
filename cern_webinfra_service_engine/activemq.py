@@ -5,14 +5,12 @@ import logging
 import re
 
 MyService = None
-mf_config = {
-    {
-        'host': os.environ["AMQ_ADDRESS"],
-        'port': os.environ["AMQ_PORT"],
-        'user': os.environ["AMQ_USER"],
-        'password': os.environ["AMQ_PASSWORD"],
-        'destination': os.environ["AMQ_DESTINATION"]
-    }
+mq_config = {
+    'host': os.environ["AMQ_ADDRESS"],
+    'port': os.environ["AMQ_PORT"],
+    'user': os.environ["AMQ_USER"],
+    'password': os.environ["AMQ_PASSWORD"],
+    'destination': os.environ["AMQ_DESTINATION"]
 }
 
 
