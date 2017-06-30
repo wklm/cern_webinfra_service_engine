@@ -5,6 +5,16 @@ import logging
 import re
 
 MyService = None
+mf_config = {
+    {
+        'host': os.environ["AMQ_ADDRESS"],
+        'port': os.environ["AMQ_PORT"],
+        'user': os.environ["AMQ_USER"],
+        'password': os.environ["AMQ_PASSWORD"],
+        'destination': os.environ["AMQ_DESTINATION"]
+    }
+}
+
 
 class Stomp(object):
     _connection = None
@@ -45,13 +55,3 @@ class Consumer(stomp.ConnectionListener):
 def create_queue(Resources):
     MyService = Resources
     return Stomp()
-
-
-def mq_config():
-    return {
-        'host': os.environ["AMQ_ADDRESS"],
-        'port': os.environ["AMQ_PORT"],
-        'user': os.environ["AMQ_USER"],
-        'password': os.environ["AMQ_PASSWORD"],
-        'destination': os.environ["AMQ_DESTINATION"]
-    }
