@@ -2,7 +2,7 @@ version: "2.1"
 services:
 
   engine:
-    image: cern_webinfra_service_engine
+    image: gitlab-registry.cern.ch/wkulma/cern_webinfra_service_engine
     volumes:
       - ./:/engine
     depends_on:
