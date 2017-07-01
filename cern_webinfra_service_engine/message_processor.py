@@ -1,7 +1,8 @@
 import json
 import re
 from abc import ABCMeta
-from .exceptions import MethodNotAllowed, RouteNotSpecified
+from exceptions import MethodNotAllowed, RouteNotSpecified
+from tblib import traceback
 
 
 class MessageProcessor(metaclass=ABCMeta):
@@ -14,14 +15,20 @@ class MessageProcessor(metaclass=ABCMeta):
         method = m['http_method']
         params, resource = self._get_route(m['path'])
 
-        if method == 'POST':
-            resource.post(self, params)
-        elif method == 'PUT':
-            resource.put(self, params)
-        elif method == 'DELETE':
-            resource.delete(self, params)
-        else:
-            raise MethodNotAllowed(method)
+        try:
+            if method == 'POST':
+                resource.post(self, params)
+            elif method == 'PUT':
+                resource.put(self, params)
+            elif method == 'DELETE':
+                resource.delete(self, params)
+            else:
+                raise MethodNotAllowed(method)
+        except Exception as e:
+            et, ev, tb = sys.exc_info()
+            tb = traceback(tb)
+            tb_dict = tb.to_dict()
+            # self._update_request_status(self, 'stack_trace', tb_dict) # TODO
 
     def add_resource(self, resource, paths):
         for path in paths:
@@ -48,5 +55,7 @@ class MessageProcessor(metaclass=ABCMeta):
             message_id.ack()
         )
 
-    def update_request_status(self):
-        pass  # TODO
+    def _update_request_status(self, field, content):
+        pass
+
+    # TODO : wrappers for inventory & logger

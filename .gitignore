@@ -3,5 +3,6 @@
 .ropeproject
 *__pycache__*
 migrations
+dist
 
 *.pyc

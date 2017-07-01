@@ -1,0 +1,86 @@
+version: "2.1"
+services:
+
+  engine:
+    image: cern_webinfra_service_engine
+    volumes:
+      - ./:/engine
+    depends_on:
+      - gateway
+      - activemq
+    environment:
+    # ActiveMq
+      AMQ_ADDRESS: activemq
+      AMQ_PORT: 61613
+      AMQ_USER: admin
+      AMQ_PASSWORD: admin
+      AMQ_DESTINATION: /topic/WEBINFRA
+
+  gateway:
+    image: gitlab-registry.cern.ch/wkulma/wim-gateway
+    ports:
+      - "9090:9090"
+    volumes:
+      - ../wim-gateway:/gateway
+    depends_on:
+      inventory:
+        condition: service_started
+      activemq:
+        condition: service_started
+      logger:
+        condition: service_started
+    environment:
+    # ActiveMq
+      AMQ_ADDRESS: activemq
+      AMQ_PORT: 61613
+      AMQ_USER: admin
+      AMQ_PASSWORD: admin
+      AMQ_DESTINATION: /topic/WEBINFRA
+    # Inventory
+      INVENTORY_ADDRESS: http://inventory:8080
+    # Requests Logger
+      LOGGER_ADDRESS: http://logger:6000
+
+  inventory:
+    image: gitlab-registry.cern.ch/wkulma/wim-inventory
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../wim-inventory:/django
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_NAME: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+
+  logger:
+    image: gitlab-registry.cern.ch/wkulma/wim-requests-logger
+    ports:
+      - "6000:6000"
+    volumes:
+      - ../wim-requests-logger:/requests-logger
+
+  activemq:
+    image: registry.access.redhat.com/jboss-amq-6/amq62-openshift
+    ports:
+      - "61613:61613"
+
+  postgres:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_NAME: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 30s
+      timeout: 30s
+      retries: 3

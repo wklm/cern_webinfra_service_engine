@@ -4,52 +4,61 @@ import stomp
 import logging
 import re
 
-MyService = None
-mq_config = {
-    'host': os.environ["AMQ_ADDRESS"],
-    'port': os.environ["AMQ_PORT"],
-    'user': os.environ["AMQ_USER"],
-    'password': os.environ["AMQ_PASSWORD"],
-    'destination': os.environ["AMQ_DESTINATION"]
-}
+from message_processor import MessageProcessor
+
+
+def create_queue(resources):
+    if not issubclass(resources, MessageProcessor):
+        raise RuntimeError("aaa")
+    return Stomp(resources)
+
 
 
 class Stomp(object):
     _connection = None
 
+    def __init__(self, resource_class):
+        self.resource_class = resource_class
+
+    @property
+    def mq_config(self):
+        return {
+            'host': os.environ["AMQ_ADDRESS"],
+            'port': os.environ["AMQ_PORT"],
+            'user': os.environ["AMQ_USER"],
+            'password': os.environ["AMQ_PASSWORD"],
+            'destination': os.environ["AMQ_DESTINATION"]
+        }
+
     def connect(self):
         self._connection = \
-            stomp.Connection([(mq_config['host'], mq_config['port'])])
+            stomp.Connection([(self.mq_config['host'], self.mq_config['port'])])
         while not self._connection.is_connected():
-            self._connection.set_listener('', Consumer(self._connection))
+            self._connection.set_listener('', Consumer(self._connection, self.resource_class))
             self._connection.start()
-            self._connection.connect(mq_config['user'],
-                                     mq_config['password'],
+            self._connection.connect(self.mq_config['user'],
+                                     self.mq_config['password'],
                                      wait=True)
         self._subscribe()
         time.sleep(60 * 60)
         self._connection.disconnect()
 
     def _subscribe(self):
-        self._connection.subscribe(destination=mq_config['destination'],
+        self._connection.subscribe(destination=self.mq_config['destination'],
                                    id=1,
                                    ack='auto')
 
 
 class Consumer(stomp.ConnectionListener):
-    def __init__(self, conn):
-        self.app = MyService(conn)
+    def __init__(self, conn, resource_class):
+        self.app = resource_class(conn)
 
     def on_error(self, headers, message):
         raise stomp.StompException(headers, message)
 
     def on_message(self, headers, message):
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1")
         self.app.process(headers, message)
 
     def on_disconnected(self):
         create_queue().connect()
-
-
-def create_queue(Resources):
-    MyService = Resources
-    return Stomp()

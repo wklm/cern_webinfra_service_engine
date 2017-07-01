@@ -12,5 +12,9 @@ setup(
     keywords=['cern', 'webinfra', 'activemq', 'stomp',
               'microservices',
               'integration'],
+    entry_points={
+        'console_scripts': [
+            'cwse-cli = cern_webinfra_service_engine.cli:main']
+    },
     classifiers=[],
 )
