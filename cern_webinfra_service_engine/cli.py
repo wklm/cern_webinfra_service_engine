@@ -13,13 +13,14 @@ class Endpoint(IResource):
         print('get', parameters)
 
     def post(self, parameters):
+        pass
         # res = request.post('hostel.cern.ch/rooms', data=parameters['data'])
-        raise Exception("heyah!")
         # return res.json()
         # print('post', parameters)
 
     def delete(self, parameters):
         print('delete', parameters)
+
 
 
 class Resources(MessageProcessor):
@@ -29,6 +30,7 @@ class Resources(MessageProcessor):
 
         self.add_resource(Endpoint, [
             'namespace/some_endpoint/<endpoint_id>',
+            'insrtance/srula/<userwdwqdid>'
         ])
 
 

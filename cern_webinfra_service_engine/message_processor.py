@@ -1,8 +1,8 @@
 import json
 import re
+import traceback
 from abc import ABCMeta
 from exceptions import MethodNotAllowed, RouteNotSpecified
-import traceback
 
 
 class MessageProcessor(metaclass=ABCMeta):
@@ -26,6 +26,7 @@ class MessageProcessor(metaclass=ABCMeta):
                 raise MethodNotAllowed(method)
         except Exception as e:
             traceback.format_exc()
+            print(e)
             # # self._update_request_status(self, 'stack_trace', tb_dict) # TODO
 
     def add_resource(self, resource, paths):

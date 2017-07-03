@@ -1,9 +1,6 @@
 import os
 import time
 import stomp
-import logging
-import re
-
 from message_processor import MessageProcessor
 
 
@@ -11,7 +8,6 @@ def create_queue(resources):
     if not issubclass(resources, MessageProcessor):
         raise RuntimeError("aaa")
     return Stomp(resources)
-
 
 
 class Stomp(object):
@@ -57,7 +53,6 @@ class Consumer(stomp.ConnectionListener):
         raise stomp.StompException(headers, message)
 
     def on_message(self, headers, message):
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1")
         self.app.process(headers, message)
 
     def on_disconnected(self):

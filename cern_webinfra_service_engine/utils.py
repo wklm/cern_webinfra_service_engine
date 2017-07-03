@@ -1,4 +1,5 @@
-import os, sys
+import os
+import sys
 
 def import_string(import_name):
     import_name = str(import_name).replace(':', '.')
