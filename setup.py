@@ -1,5 +1,8 @@
 from distutils.core import setup
 
+with open('requirements.txt') as f:
+        requirements = f.read().splitlines()
+
 setup(
     name='cern_webinfra_service_engine',
     packages=['cern_webinfra_service_engine'],
@@ -13,4 +16,5 @@ setup(
               'microservices',
               'integration'],
     classifiers=[],
+    install_requires=requirements,
 )
