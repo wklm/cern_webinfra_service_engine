@@ -5,9 +5,7 @@ from abc import ABCMeta
 from exceptions import MethodNotAllowed, RouteNotSpecified
 
 
-class MessageProcessor:
-    __metaclass__ = ABCMeta
-
+class MessageProcessor(metaclass=ABCMeta):
     def __init__(self, conn):
         self.queue_connection = conn
         self.routes = {}
