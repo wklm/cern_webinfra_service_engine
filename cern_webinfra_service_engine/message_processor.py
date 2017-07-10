@@ -5,7 +5,9 @@ from abc import ABCMeta
 from exceptions import MethodNotAllowed, RouteNotSpecified
 
 
-class MessageProcessor(metaclass=ABCMeta):
+class MessageProcessor:
+    __metaclass__ = ABCMeta
+
     def __init__(self, conn):
         self.queue_connection = conn
         self.routes = {}
@@ -57,4 +59,4 @@ class MessageProcessor(metaclass=ABCMeta):
     def _update_request_status(self, field, content):
         pass
 
-    # TODO : wrappers for inventory & logger
+        # TODO : wrappers for inventory & logger
