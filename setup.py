@@ -6,7 +6,7 @@ with open('requirements.txt') as f:
 setup(
     name='cern_webinfra_service_engine',
     packages=['cern_webinfra_service_engine'],
-    version='0.1.0',
+    version='0.1.1',
     description='Library for connecting the microservices with CERN web infrastructure manager',
     author='CERN / Wojciech Kulma',
     author_email='wojciech.kulma@cern.ch',
