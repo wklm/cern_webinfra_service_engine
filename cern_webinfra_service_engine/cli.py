@@ -1,6 +1,6 @@
-from activemq import create_queue
-from message_processor import MessageProcessor
-from iresource import IResource
+from .activemq import create_queue
+from .message_processor import MessageProcessor
+from .iresource import IResource
 from utils import import_string
 import os
 

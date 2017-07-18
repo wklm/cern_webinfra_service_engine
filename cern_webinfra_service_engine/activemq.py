@@ -1,7 +1,7 @@
 import os
 import time
 import stomp
-from message_processor import MessageProcessor
+from .message_processor import MessageProcessor
 
 
 def create_queue(resources):

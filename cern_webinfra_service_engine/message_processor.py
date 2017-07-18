@@ -2,7 +2,7 @@ import json
 import re
 import traceback
 from abc import ABCMeta
-from exceptions import MethodNotAllowed, RouteNotSpecified
+from .exceptions import MethodNotAllowed, RouteNotSpecified
 
 
 class MessageProcessor(metaclass=ABCMeta):
