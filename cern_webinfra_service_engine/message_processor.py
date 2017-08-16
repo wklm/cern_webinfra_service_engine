@@ -46,7 +46,8 @@ class MessageProcessor(metaclass=ABCMeta):
             m = route.match(path)
             if m:
                 return m.groupdict(), self.routes[route]
-        raise RouteNotSpecified(path)
+        #raise RouteNotSpecified(path)
+        return
 
     def _acknowledge(self, message_id):  # TODO
         self.update_request_status()
