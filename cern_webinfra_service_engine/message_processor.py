@@ -2,7 +2,8 @@ import json
 import re
 import traceback
 from abc import ABCMeta
-from .exceptions import MethodNotAllowed, RouteNotSpecified
+
+from .exceptions import MethodNotAllowed
 
 
 class MessageProcessor(metaclass=ABCMeta):
@@ -14,20 +15,19 @@ class MessageProcessor(metaclass=ABCMeta):
         m = json.loads(message)
         method = m['http_method']
         params, resource = self._get_route(m['path'])
-
+        methods = {
+            'POST': resource.post,
+            'PUT': resource.put,
+            'DELETE': resource.delete
+        }
         try:
-            if method == 'POST':
-                resource.post(self, params)
-            elif method == 'PUT':
-                resource.put(self, params)
-            elif method == 'DELETE':
-                resource.delete(self, params)
-            else:
-                raise MethodNotAllowed(method)
+            methods[method](self, params, m)
+        except KeyError:
+            raise MethodNotAllowed(method)
         except Exception as e:
             traceback.format_exc()
             print(e)
-            # # self._update_request_status(self, 'stack_trace', tb_dict) # TODO
+            # self._update_request_status(self, 'stack_trace', tb_dict) # TODO
 
     def add_resource(self, resource, paths):
         for path in paths:
@@ -46,16 +46,13 @@ class MessageProcessor(metaclass=ABCMeta):
             m = route.match(path)
             if m:
                 return m.groupdict(), self.routes[route]
-        #raise RouteNotSpecified(path)
         return
 
     def _acknowledge(self, message_id):  # TODO
-        self.update_request_status()
+        self._update_request_status()
         self.queue_connection.ack(
             message_id.ack()
         )
 
     def _update_request_status(self, field, content):
         pass
-
-        # TODO : wrappers for inventory & logger

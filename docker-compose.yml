@@ -2,7 +2,7 @@ version: "2.1"
 services:
 
   engine:
-    image: gitlab-registry.cern.ch/wkulma/cern_webinfra_service_engine
+    image: wklm/cern_webinfra_service_engine
     volumes:
       - ./:/engine
     depends_on:
@@ -19,29 +19,35 @@ services:
       INVENTORY_ADDRESS: http://inventory:8080
 
   gateway:
-    image: gitlab-registry.cern.ch/wkulma/wim-gateway
-    ports:
-      - "9090:9090"
-    volumes:
-      - ../wim-gateway:/gateway
-    depends_on:
-      inventory:
-        condition: service_started
-      activemq:
-        condition: service_started
-      logger:
-        condition: service_started
-    environment:
-    # ActiveMq
-      AMQ_ADDRESS: activemq
-      AMQ_PORT: 61613
-      AMQ_USER: admin
-      AMQ_PASSWORD: admin
-      AMQ_DESTINATION: /topic/WEBINFRA
-    # Inventory
-      INVENTORY_ADDRESS: http://inventory:8080
-    # Requests Logger
-      LOGGER_ADDRESS: http://logger:6000
+      image: wklm/gateway-oauth
+#      build: .
+#      volumes:
+#        - .:/opt/webinfra/gateway
+      ports:
+       - "9090:9090"
+      depends_on:
+        - inventory
+        - logger
+      environment:
+       # ActiveMq
+        AMQ_ADDRESS: activemq
+        AMQ_PORT: 61613
+        AMQ_USER: admin
+        AMQ_PASSWORD: admin
+        AMQ_DESTINATION: /topic/WEBINFRA
+       # Inventory
+        INVENTORY_URL: http://inventory:8080
+       # Requests Logger
+        LOGGER_URL: http://logger:6000
+       # Oauth
+        OAUTH_CLIENT_ID: aaa
+        OAUTH_SECRET_KEY: aaa
+        CLIENT_SECRET_KEY: c0k0lwi3k
+        ADMIN_EGROUP: web-services-core-admins
+        OAUTH_SERVICE_URL: https://oauth.web.cern.ch
+        OAUTH_RESOURCE_URL: https://oauthresource.web.cern.ch
+      # Access Management service
+        ACCESS_MANAGEMENT_URL: http://accessmanagement:3456
 
   inventory:
     image: gitlab-registry.cern.ch/wkulma/wim-inventory

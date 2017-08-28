@@ -1,38 +1,36 @@
+import operator
+
 from .activemq import create_queue
-from .message_processor import MessageProcessor
 from .iresource import IResource
-from utils import import_string
-import os
+from .message_processor import MessageProcessor
 
 
-
-
-class Endpoint(IResource):
-
-    def get(self, **kwargs):
-        print('get', parameters)
-
+class Calculator(IResource):
     def post(self, parameters):
-        pass
-        # res = request.post('hostel.cern.ch/rooms', data=parameters['data'])
-        # return res.json()
-        # print('post', parameters)
+        operations = {
+            '+': operator.add,
+            '-': operator.sub,
+        }
+        operation = (operations[parameters['operand']])
+        n1, n2 = \
+            int(parameters['number1']), \
+            int(parameters['number2'])
+        print(operation(n1, n2))
+
+    def put(self, parameters):
+        print('put', parameters)
 
     def delete(self, parameters):
         print('delete', parameters)
 
 
-
 class Resources(MessageProcessor):
-
     def __init__(self, conn):
         super(Resources, self).__init__(conn)
 
-        self.add_resource(Endpoint, [
-            'namespace/some_endpoint/<endpoint_id>',
-            'insrtance/srula/<userwdwqdid>'
+        self.add_resource(Calculator, [
+            'calculator/<number1>/<operand>/<number2>'
         ])
 
 
-print('starting the service queue...')
 create_queue(Resources).connect()

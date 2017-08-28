@@ -50,7 +50,7 @@ class Consumer(stomp.ConnectionListener):
         self.app = resource_class(conn)
 
     def on_error(self, headers, message):
-        raise stomp.StompException(headers, message)
+        raise StompException(headers, message)
 
     def on_message(self, headers, message):
         self.app.process(headers, message)
