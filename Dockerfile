@@ -8,4 +8,4 @@ RUN pip install --upgrade --quiet pip && \
     pip install -r requirements.txt && \
     pip install -e .
 
-ENTRYPOINT python cern_webinfra_service_engine/cli.py
+ENTRYPOINT python -u cern_webinfra_service_engine/cli.py

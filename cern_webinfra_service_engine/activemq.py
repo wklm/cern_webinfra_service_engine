@@ -1,12 +1,15 @@
 import os
 import time
+
 import stomp
+
 from .message_processor import MessageProcessor
 
 
 def create_queue(resources):
     if not issubclass(resources, MessageProcessor):
-        raise RuntimeError("aaa")
+        raise RuntimeError("Resources class has to be a subclass of a "
+                           "MessageProcessor")
     return Stomp(resources)
 
 
@@ -28,21 +31,32 @@ class Stomp(object):
 
     def connect(self):
         self._connection = \
-            stomp.Connection([(self.mq_config['host'], self.mq_config['port'])])
+            stomp.Connection(
+                [(self.mq_config['host'], self.mq_config['port'])]
+            )
         while not self._connection.is_connected():
-            self._connection.set_listener('', Consumer(self._connection, self.resource_class))
+            self._connection.set_listener(
+                '', Consumer(
+                    self._connection,
+                    self.resource_class
+                )
+            )
             self._connection.start()
-            self._connection.connect(self.mq_config['user'],
-                                     self.mq_config['password'],
-                                     wait=True)
+            self._connection.connect(
+                self.mq_config['user'],
+                self.mq_config['password'],
+                wait=True
+            )
         self._subscribe()
         time.sleep(60 * 60)
         self._connection.disconnect()
 
     def _subscribe(self):
-        self._connection.subscribe(destination=self.mq_config['destination'],
-                                   id=1,
-                                   ack='auto')
+        self._connection.subscribe(
+            destination=self.mq_config['destination'],
+            id=1,
+            ack='auto'
+        )
 
 
 class Consumer(stomp.ConnectionListener):

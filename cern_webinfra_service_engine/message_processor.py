@@ -14,20 +14,24 @@ class MessageProcessor(metaclass=ABCMeta):
     def process(self, headers, message):
         m = json.loads(message)
         method = m['http_method']
-        params, resource = self._get_route(m['path'])
-        methods = {
-            'POST': resource.post,
-            'PUT': resource.put,
-            'DELETE': resource.delete
-        }
         try:
+            params, resource = self._get_route(m['path'])
+            methods = {
+                'POST': resource.post,
+                'PUT': resource.put,
+                'DELETE': resource.delete
+            }
             methods[method](self, params, m)
         except KeyError:
             raise MethodNotAllowed(method)
+        except TypeError:
+            pass
         except Exception as e:
             traceback.format_exc()
             print(e)
-            # self._update_request_status(self, 'stack_trace', tb_dict) # TODO
+            # TODO self._update_request_status(self, 'stack_trace', tb_dict)
+
+
 
     def add_resource(self, resource, paths):
         for path in paths:

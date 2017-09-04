@@ -2,7 +2,8 @@ version: "2.1"
 services:
 
   engine:
-    image: wklm/cern_webinfra_service_engine
+#    image: wklm/cern_webinfra_service_engine
+    build: .
     volumes:
       - ./:/engine
     depends_on:
@@ -19,10 +20,9 @@ services:
       INVENTORY_ADDRESS: http://inventory:8080
 
   gateway:
-      image: wklm/gateway-oauth
-#      build: .
+      build: ../wim-gateway
 #      volumes:
-#        - .:/opt/webinfra/gateway
+#        - ../wim-gatewa:/opt/webinfra/gateway
       ports:
        - "9090:9090"
       depends_on:
@@ -50,20 +50,22 @@ services:
         ACCESS_MANAGEMENT_URL: http://accessmanagement:3456
 
   inventory:
-    image: gitlab-registry.cern.ch/wkulma/wim-inventory
+#    image: wklm/cern-webinfra-inventory
+    build: ../wim-inventory
     ports:
       - "8080:8080"
-    volumes:
-      - ../wim-inventory:/django
-    depends_on:
-      postgres:
-        condition: service_healthy
     environment:
-      POSTGRES_NAME: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: mysecretpassword
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
+     # Postgres
+      POSTGRESQL_HOST: postgres
+      POSTGRESQL_PORT: 5432
+      POSTGRESQL_USER: admin
+      POSTGRESQL_PASSWORD: verystr0ngpassword
+      POSTGRESQL_DATABASE: webinfra
+    depends_on:
+      - postgres
+
+
+
 
   logger:
     image: gitlab-registry.cern.ch/wkulma/wim-requests-logger
@@ -78,17 +80,11 @@ services:
       - "61613:61613"
 
   postgres:
-    image: postgres
+    image: registry.access.redhat.com/rhscl/postgresql-94-rhel7
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_NAME: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: mysecretpassword
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
-      interval: 30s
-      timeout: 30s
-      retries: 3
+      POSTGRESQL_USER: admin
+      POSTGRESQL_PASSWORD: verystr0ngpassword
+      POSTGRESQL_DATABASE: webinfra
+
