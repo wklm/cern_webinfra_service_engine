@@ -27,8 +27,7 @@ class MessageProcessor(metaclass=ABCMeta):
         except TypeError:
             pass
         except Exception as e:
-            traceback.format_exc()
-            print(e)
+            raise e
             # TODO self._update_request_status(self, 'stack_trace', tb_dict)
 
 
